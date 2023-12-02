@@ -3,7 +3,7 @@ use std::io::{ self, BufRead };
 use regex::Regex;
 use std::collections::HashMap;
 
-fn main() -> io::Result<()> {
+fn part_one() -> io::Result<()> {
     let mut max_cubes: HashMap<String, u8> = HashMap::new();
     max_cubes.insert("red".to_string(), 12);
     max_cubes.insert("green".to_string(), 13);
@@ -26,6 +26,7 @@ fn main() -> io::Result<()> {
                 // println!("Game {}", game_number.as_str());
                 // for each set
                 let sets: Vec<&str> = content.get(1).unwrap().split(';').collect();
+
                 for set in sets {
                     // println!("{:?}", set);
                     for cubes in set.split(",") {
@@ -54,4 +55,8 @@ fn main() -> io::Result<()> {
     }
     println!("Result: {}", result);
     Ok(())
+}
+
+fn main() -> io::Result<()> {
+    part_one()
 }
