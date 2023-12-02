@@ -26,7 +26,6 @@ fn part_one() -> io::Result<()> {
                 // println!("Game {}", game_number.as_str());
                 // for each set
                 let sets: Vec<&str> = content.get(1).unwrap().split(';').collect();
-
                 for set in sets {
                     // println!("{:?}", set);
                     for cubes in set.split(",") {
@@ -57,6 +56,47 @@ fn part_one() -> io::Result<()> {
     Ok(())
 }
 
+fn part_two() -> io::Result<()> {
+    let mut max_cubes: HashMap<String, u8> = HashMap::new();
+    max_cubes.insert("red".to_string(), 12);
+    max_cubes.insert("green".to_string(), 13);
+    max_cubes.insert("blue".to_string(), 14);
+
+    let file = File::open("input.txt")?;
+    let reader = io::BufReader::new(file);
+
+    let mut result: u32 = 0;
+
+    for line in reader.lines() {
+        let line = line?;
+        let content: Vec<&str> = line.split(':').collect();
+        let sets: Vec<&str> = content.get(1).unwrap().split(';').collect();
+        let mut fewer_game_possible: HashMap<String, u8> = HashMap::new();
+        fewer_game_possible.insert("red".to_string(), 0);
+        fewer_game_possible.insert("green".to_string(), 0);
+        fewer_game_possible.insert("blue".to_string(), 0);
+        for set in sets {
+            // println!("{:?}", set);
+            for cubes in set.split(",") {
+                let vec_cubes: Vec<&str> = cubes.trim().split_whitespace().collect();
+                // println!("{:?}", vec_cubes.get(0).unwrap());
+                let n = vec_cubes.get(0).unwrap();
+                let key = vec_cubes.get(1).unwrap().to_string();
+                if let Ok(current_number) = n.parse::<u8>() {
+                    if let Some(max_value) = fewer_game_possible.get_mut(&key) {
+                        // println!("{}", current_number);
+                        *max_value = (*max_value).max(current_number);
+                    }
+                }
+            }
+        }
+        result += fewer_game_possible.values().cloned().fold(1u32, |acc, x| acc * x as u32);
+    }
+    println!("Result: {}", result);
+    Ok(())
+}
+
 fn main() -> io::Result<()> {
-    part_one()
+    // part_one()
+    part_two()
 }
