@@ -81,20 +81,21 @@ fn part_one() -> io::Result<()> {
                         }
                     }
                 }
+
                 // When complete sequence, check if is adjacent to sum
-                if finish_acc && adjacent {
-                    // println!("{}", acc);
-                    if let Ok(acc) = acc.parse::<u32>() {
-                        result += acc;
+                if finish_acc {
+                    println!("{} {}", acc, adjacent);
+                    if adjacent {
+                        if let Ok(acc) = acc.parse::<u32>() {
+                            result += acc;
+                        }
+                        acc.clear();
                     }
-                    acc.clear();
                 }
+
             }
         }
-        /*println!("{}", "------");
-        if line_ind > 2 {
-            break;
-        }*/
+        println!("{}", "----------");
     }
     println!("Result: {}", result);
     Ok(())
