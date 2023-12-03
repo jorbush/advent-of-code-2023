@@ -9,10 +9,10 @@ fn part_one() -> io::Result<()> {
     let mut result: u32 = 0;
     let lines: Vec<String> = reader.lines().collect::<Result<_, _>>()?;
     let mut acc = String::new();
+    let mut adjacent: bool = false;
 
     for (line_ind, line) in lines.iter().enumerate() {
         for (char_position, character) in line.chars().enumerate() {
-            let mut adjacent: bool = false;
 
             if character == '.' {
                 acc.clear();
@@ -20,6 +20,7 @@ fn part_one() -> io::Result<()> {
             }
             if character.is_numeric() {
                 acc = acc + &character.to_string();
+                let mut finish_acc = false;
                 // Check previous line
                 if line_ind > 0 {
                     if let Some(previous_line) = lines.get(line_ind - 1) {
@@ -47,7 +48,9 @@ fn part_one() -> io::Result<()> {
                 if let Some(next_char) = line.chars().nth(char_position + 1) {
                     if next_char != '.' && !next_char.is_numeric() {
                         adjacent = true;
-
+                    }
+                    if !next_char.is_numeric() {
+                        finish_acc = true;
                     }
                 }
                 if char_position > 0 {
@@ -79,8 +82,8 @@ fn part_one() -> io::Result<()> {
                     }
                 }
                 // When complete sequence, check if is adjacent to sum
-                if acc.len() == 3 && adjacent {
-                    println!("{}", acc);
+                if finish_acc && adjacent {
+                    // println!("{}", acc);
                     if let Ok(acc) = acc.parse::<u32>() {
                         result += acc;
                     }
@@ -88,6 +91,10 @@ fn part_one() -> io::Result<()> {
                 }
             }
         }
+        /*println!("{}", "------");
+        if line_ind > 2 {
+            break;
+        }*/
     }
     println!("Result: {}", result);
     Ok(())
