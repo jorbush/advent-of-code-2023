@@ -10,6 +10,7 @@ fn part_one() -> io::Result<()> {
     let lines: Vec<String> = reader.lines().collect::<Result<_, _>>()?;
     let mut acc = String::new();
     let mut adjacent: bool = false;
+    let mut results: Vec<u32> = Vec::new();
 
     for (line_ind, line) in lines.iter().enumerate() {
         for (char_position, character) in line.chars().enumerate() {
@@ -87,6 +88,7 @@ fn part_one() -> io::Result<()> {
                     println!("{} {}", acc, adjacent);
                     if adjacent {
                         if let Ok(acc) = acc.parse::<u32>() {
+                            results.push(acc);
                             result += acc;
                         }
                         acc.clear();
@@ -97,6 +99,7 @@ fn part_one() -> io::Result<()> {
         }
         println!("{}", "----------");
     }
+    // println!("Results: {:?}", results);
     println!("Result: {}", result);
     Ok(())
 }
