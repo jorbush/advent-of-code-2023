@@ -1,5 +1,4 @@
 venv
 .idea
 /target
-day-2/target
-day-3/target
+*/target
