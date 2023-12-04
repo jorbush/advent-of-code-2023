@@ -42,8 +42,8 @@ impl<T> Stack<T> {
         Stack { items: vector }
     }
 
-    fn push(&mut self, element: T) {
-        self.items.insert(0, element);
+    fn push(&mut self, element: T, position: usize) {
+        self.items.insert(position, element);
     }
 
     fn is_empty(&self) -> bool {
@@ -92,13 +92,21 @@ fn part_two() -> io::Result<()> {
                         let next_index = id as usize + reward_line as usize;
                         if next_index < lines.len() - 1 {
                             if let Some(new_scratchcard) = lines.get(next_index) {
-                                scratchcards.push(new_scratchcard.to_string());
-                                println!("{}", new_scratchcard)
+                                let new_content: Vec<&str> = new_scratchcard.split(':').collect();
+                                let new_scratchcard_id: Vec<&str> = new_content.get(0).unwrap().split_whitespace().collect();
+                                let new_id_str = new_scratchcard_id.get(1).unwrap().to_string();
+                                if let Ok(new_id) = new_id_str.parse::<u16>() {
+                                    scratchcards.push(new_scratchcard.to_string(), (new_id - 2).into());
+                                    println!("{}", new_id)
+                                }
                             }
                         }
                     }
                 }
             }
+        }
+        if result == 7 {
+            break
         }
     }
 
