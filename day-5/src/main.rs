@@ -1,6 +1,21 @@
+use std::cmp::min;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{ self, BufRead };
+
+fn calculate_final_value(seed: u32, seed_maps: &Vec<HashMap<u32, u32>>) -> u32 {
+    let mut current_value = seed;
+
+    for map in seed_maps {
+        if let Some(&dest_number) = map.get(&current_value) {
+            current_value = dest_number;
+        } else {
+            break;
+        }
+    }
+
+    current_value
+}
 
 fn part_one() -> io::Result<()> {
 
@@ -39,6 +54,11 @@ fn part_one() -> io::Result<()> {
         }
     }
     println!("Maps: {:?}", seed_maps);
+    for seed in &initial_seeds {
+        let final_value = calculate_final_value(*seed, &seed_maps);
+        println!("Initial Seed: {}, Final Value: {}", seed, final_value);
+        result = min(result, final_value.try_into().unwrap());
+    }
     println!("Result: {}", result);
     Ok(())
 }
