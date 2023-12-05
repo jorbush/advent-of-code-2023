@@ -8,8 +8,6 @@ fn calculate_final_value(seed: u32, seed_maps: &Vec<HashMap<u32, u32>>) -> u32 {
     for map in seed_maps {
         if let Some(&dest_number) = map.get(&current_value) {
             current_value = dest_number;
-        } else {
-            break;
         }
     }
     current_value
@@ -20,42 +18,46 @@ fn part_one() -> io::Result<()> {
     let file = File::open("input.txt")?;
     let reader = io::BufReader::new(file);
 
-    let mut result: u16 = 0;
+    let mut result: u32 = std::u32::MAX;
     let mut seed_maps: Vec<HashMap<u32, u32>> = Vec::new();
     let mut current_map: HashMap<u32, u32> = HashMap::new();
     let mut initial_seeds: Vec<u32> = Vec::new();
 
     for line in reader.lines() {
         let line = line?;
+        if line.is_empty() {
+            continue;
+        }
         if line.contains(":") {
             if initial_seeds.len() > 0 {
                 seed_maps.push(current_map.clone());
-                println!("New map");
+                // println!("New map");
                 current_map.clear();
+            } else {
+                let content: Vec<&str> = line.split(':').collect();
+                let seeds: Vec<&str> = content.get(1).unwrap().split_whitespace().collect();
+                initial_seeds = seeds.iter().map(|s| s.parse::<u32>().unwrap()).collect();
             }
         } else {
-            if initial_seeds.len() == 0 {
-                initial_seeds = line.split_whitespace().map(|s| s.parse::<u32>().unwrap()).collect();
-            } else {
-                let content: Vec<&str> = line.split_whitespace().collect();
-                println!("Content: {:?}", content);
-                let dest_start: u32 = content.get(0).unwrap().parse().unwrap();
-                let source_start: u32 = content.get(1).unwrap().parse().unwrap();
-                let range_length: u32 = content.get(2).unwrap().parse().unwrap();
+            let content: Vec<&str> = line.split_whitespace().collect();
+            // println!("Content: {:?}", content);
+            let dest_start: u32 = content.get(0).unwrap().parse().unwrap();
+            let source_start: u32 = content.get(1).unwrap().parse().unwrap();
+            let range_length: u32 = content.get(2).unwrap().parse().unwrap();
 
-                for i in 0..range_length {
-                    let dest_number = dest_start + i;
-                    let source_number = source_start + i;
-                    current_map.insert(source_number, dest_number);
-                }
+            for i in 0..range_length {
+                let dest_number = dest_start + i;
+                let source_number = source_start + i;
+                // println!("{:?} {:?}", dest_number, source_number);
+                current_map.insert(source_number, dest_number);
             }
         }
     }
-    println!("Maps: {:?}", seed_maps);
+    // println!("Maps: {:?}", seed_maps);
     for seed in &initial_seeds {
         let final_value = calculate_final_value(*seed, &seed_maps);
-        println!("Initial Seed: {}, Final Value: {}", seed, final_value);
-        result = min(result, final_value.try_into().unwrap());
+        // println!("Initial Seed: {}, Final Value: {}", seed, final_value);
+        result = min(result, final_value);
     }
     println!("Result: {}", result);
     Ok(())
