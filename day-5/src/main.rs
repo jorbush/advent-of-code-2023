@@ -5,7 +5,6 @@ use std::io::{ self, BufRead };
 
 fn calculate_final_value(seed: u32, seed_maps: &Vec<HashMap<u32, u32>>) -> u32 {
     let mut current_value = seed;
-
     for map in seed_maps {
         if let Some(&dest_number) = map.get(&current_value) {
             current_value = dest_number;
@@ -13,7 +12,6 @@ fn calculate_final_value(seed: u32, seed_maps: &Vec<HashMap<u32, u32>>) -> u32 {
             break;
         }
     }
-
     current_value
 }
 
@@ -33,7 +31,7 @@ fn part_one() -> io::Result<()> {
             if initial_seeds.len() > 0 {
                 seed_maps.push(current_map.clone());
                 println!("New map");
-                current_map = HashMap::new();
+                current_map.clear();
             }
         } else {
             if initial_seeds.len() == 0 {
