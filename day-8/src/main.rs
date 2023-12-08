@@ -51,34 +51,39 @@ impl TreeNode {
     }
 }
 
-fn build_tree_from_lines(lines: &[String]) -> Option<Box<TreeNode>> {
-    if lines.is_empty() {
-        return None;
+fn build_tree_from_lines(iter: &mut std::slice::Iter<String>) -> Option<Box<TreeNode>> {
+    if let Some(line) = iter.next() {
+        let root_values: Vec<&str> = line.split('=').collect();
+        let root_value = root_values.get(0).unwrap().trim();
+        let childs = root_values
+            .get(1)
+            .unwrap()
+            .replace("(", "")
+            .replace(")", "");
+        let root_childs: Vec<&str> =
+            childs
+                .split(',')
+                .map(|s| s.trim())
+                .collect();
+
+        let mut root = TreeNode::new(root_value);
+
+        if let Some(left_child) = root_childs.get(0) {
+            root.insert_left(left_child);
+        }
+
+        if let Some(right_child) = root_childs.get(1) {
+            root.insert_right(right_child);
+        }
+        println!("{:?}", root);
+
+        root.left = build_tree_from_lines(iter);
+        root.right = build_tree_from_lines(iter);
+
+        Some(Box::new(root))
+    } else {
+        None
     }
-
-    let root_line = &lines[0];
-    let root_values: Vec<&str> = root_line.split('=').collect();
-    let root_value = root_values.get(0).unwrap().trim();
-    let childs = root_values
-        .get(1)
-        .unwrap()
-        .replace("(", "")
-        .replace(")", "");
-    let root_childs: Vec<&str> =
-        childs
-        .split(',')
-        .map(|s| s.trim())
-        .collect();
-
-    let left_child = root_childs.get(0).unwrap();
-    let right_child = root_childs.get(1).unwrap();
-    let mut root = TreeNode::new(root_value);
-    root.insert_left(left_child);
-    root.insert_right(right_child);
-
-    // continue adding
-
-    Some(Box::new(root))
 }
 
 fn part_one() -> io::Result<()> {
@@ -95,10 +100,11 @@ fn part_one() -> io::Result<()> {
         .filter_map(|line| line.ok())
         .collect();
 
-    if let Some(root) = build_tree_from_lines(&nodes) {
+    let mut iter = nodes.iter();
+    if let Some(root) = build_tree_from_lines(&mut iter) {
         root.print_in_order();
+        println!("{:?}", root);
     }
-
     Ok(())
 }
 
