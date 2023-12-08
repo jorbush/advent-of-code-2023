@@ -63,7 +63,6 @@ impl TreeNode {
         }
     }
 
-
     fn print_in_order(&self, depth: usize) {
         if let Some(right) = &self.right {
             right.print_in_order(depth + 1);
@@ -79,13 +78,6 @@ impl TreeNode {
             left.print_in_order(depth + 1);
         }
     }
-
-    fn height(&self) -> usize {
-        1 + usize::max(
-            self.left.as_ref().map_or(0, |node| node.height()),
-            self.right.as_ref().map_or(0, |node| node.height()),
-        )
-    }
 }
 
 fn build_tree_from_lines(iter: &mut std::slice::Iter<String>, root: &mut Option<Box<TreeNode>>) {
@@ -97,11 +89,7 @@ fn build_tree_from_lines(iter: &mut std::slice::Iter<String>, root: &mut Option<
             .unwrap()
             .replace("(", "")
             .replace(")", "");
-        let root_childs: Vec<&str> =
-            childs
-                .split(',')
-                .map(|s| s.trim())
-                .collect();
+        let root_childs: Vec<&str> = childs.split(',').map(|s| s.trim()).collect();
 
         if root.is_none() {
             *root = Some(Box::new(TreeNode::new(root_value)));
@@ -118,9 +106,8 @@ fn build_tree_from_lines(iter: &mut std::slice::Iter<String>, root: &mut Option<
                 root_node.insert_right_at_value(root_value, right_child);
             }
         }
-        println!("{:?}", root);
+        // println!("{:?}", root);
         build_tree_from_lines(iter, root);
-
     }
 }
 
@@ -143,7 +130,7 @@ fn part_one() -> io::Result<()> {
     build_tree_from_lines(&mut iter, &mut root);
     if let Some(root_node) = root {
         root_node.print_in_order(0);
-        println!("{:?}", root_node);
+        // println!("{:?}", root_node);
     }
     Ok(())
 }
