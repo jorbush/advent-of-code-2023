@@ -64,13 +64,19 @@ impl TreeNode {
     }
 
 
-    fn print_in_order(&self) {
-        if let Some(left) = &self.left {
-            left.print_in_order();
-        }
-        println!("{}", self.value);
+    fn print_in_order(&self, depth: usize) {
         if let Some(right) = &self.right {
-            right.print_in_order();
+            right.print_in_order(depth + 1);
+        }
+
+        for _ in 0..depth {
+            print!("    ");
+        }
+
+        println!("{}", self.value);
+
+        if let Some(left) = &self.left {
+            left.print_in_order(depth + 1);
         }
     }
 
@@ -82,7 +88,7 @@ impl TreeNode {
     }
 }
 
-fn build_tree_from_lines(iter: &mut std::slice::Iter<String>) -> Option<Box<TreeNode>> {
+fn build_tree_from_lines(iter: &mut std::slice::Iter<String>, root: &mut Option<Box<TreeNode>>) {
     if let Some(line) = iter.next() {
         let root_values: Vec<&str> = line.split('=').collect();
         let root_value = root_values.get(0).unwrap().trim();
@@ -97,19 +103,24 @@ fn build_tree_from_lines(iter: &mut std::slice::Iter<String>) -> Option<Box<Tree
                 .map(|s| s.trim())
                 .collect();
 
-        let mut root: TreeNode = TreeNode::new(root_value);
+        if root.is_none() {
+            *root = Some(Box::new(TreeNode::new(root_value)));
+        }
 
         if let Some(left_child) = root_childs.get(0) {
-            root.insert_left_at_value(&root.value.clone(), left_child);
+            if let Some(ref mut root_node) = root {
+                root_node.insert_left_at_value(root_value, left_child);
+            }
         }
 
         if let Some(right_child) = root_childs.get(1) {
-            root.insert_right_at_value(&root.value.clone(), right_child);
+            if let Some(ref mut root_node) = root {
+                root_node.insert_right_at_value(root_value, right_child);
+            }
         }
         println!("{:?}", root);
-        Some(Box::new(root))
-    } else {
-        None
+        build_tree_from_lines(iter, root);
+
     }
 }
 
@@ -128,9 +139,11 @@ fn part_one() -> io::Result<()> {
         .collect();
 
     let mut iter = nodes.iter();
-    if let Some(root) = build_tree_from_lines(&mut iter) {
-        root.print_in_order();
-        println!("{:?}", root);
+    let mut root: Option<Box<TreeNode>> = None;
+    build_tree_from_lines(&mut iter, &mut root);
+    if let Some(root_node) = root {
+        root_node.print_in_order(0);
+        println!("{:?}", root_node);
     }
     Ok(())
 }
