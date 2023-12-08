@@ -78,6 +78,25 @@ impl TreeNode {
             left.print_in_order(depth + 1);
         }
     }
+
+    fn search_steps(&self, target_value: &str, steps: usize) -> Option<usize> {
+        if self.value == target_value {
+            Some(steps)
+        } else {
+            let mut left_steps = None;
+            let mut right_steps = None;
+
+            if let Some(left) = &self.left {
+                left_steps = left.search_steps(target_value, steps + 1);
+            }
+
+            if let Some(right) = &self.right {
+                right_steps = right.search_steps(target_value, steps + 1);
+            }
+
+            left_steps.or(right_steps)
+        }
+    }
 }
 
 fn build_tree_from_lines(iter: &mut std::slice::Iter<String>, root: &mut Option<Box<TreeNode>>) {
@@ -131,6 +150,11 @@ fn part_one() -> io::Result<()> {
     if let Some(root_node) = root {
         root_node.print_in_order(0);
         // println!("{:?}", root_node);
+        if let Some(steps) = root_node.search_steps("ZZZ", 0) {
+            println!("Steps to find 'ZZZ': {}", steps);
+        } else {
+            println!("Value 'ZZZ' not found in the tree");
+        }
     }
     Ok(())
 }
