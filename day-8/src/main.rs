@@ -79,19 +79,24 @@ impl TreeNode {
         }
     }
 
-    fn search_steps(&self, target_value: &str, steps: usize) -> Option<usize> {
+    fn search_steps(&self, target_value: &str, steps: usize, instructions: Vec<&str>, ind: &mut usize) -> Option<usize> {
+        if *ind == instructions.len() {
+            *ind = 0;
+        }
         if self.value == target_value {
             Some(steps)
         } else {
             let mut left_steps = None;
             let mut right_steps = None;
-
-            if let Some(left) = &self.left {
-                left_steps = left.search_steps(target_value, steps + 1);
-            }
-
-            if let Some(right) = &self.right {
-                right_steps = right.search_steps(target_value, steps + 1);
+            println!("{} {}", self.value, *instructions.get(*ind).unwrap());
+            if *instructions.get(*ind).unwrap() == "L" {
+                if let Some(left) = &self.left {
+                    left_steps = left.search_steps(target_value, steps + 1, instructions, &mut (*ind + 1));
+                }
+            } else {
+                if let Some(right) = &self.right {
+                    right_steps = right.search_steps(target_value, steps + 1, instructions, &mut (*ind + 1));
+                }
             }
 
             left_steps.or(right_steps)
@@ -150,7 +155,7 @@ fn part_one() -> io::Result<()> {
     if let Some(root_node) = root {
         root_node.print_in_order(0);
         // println!("{:?}", root_node);
-        if let Some(steps) = root_node.search_steps("ZZZ", 0) {
+        if let Some(steps) = root_node.search_steps("ZZZ", 0, left_right_instructions.split("").collect(), &mut 0) {
             println!("Steps to find 'ZZZ': {}", steps);
         } else {
             println!("Value 'ZZZ' not found in the tree");
