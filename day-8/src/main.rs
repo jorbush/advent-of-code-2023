@@ -33,6 +33,37 @@ impl TreeNode {
         }
     }
 
+    fn insert_left_at_value(&mut self, target_value: &str, new_value: &str) {
+        if self.value == target_value {
+            // Insert left child at the current node
+            self.insert_left(new_value);
+        } else {
+            // Search for the target_value in left and right subtrees
+            if let Some(left) = &mut self.left {
+                left.insert_left_at_value(target_value, new_value);
+            }
+            if let Some(right) = &mut self.right {
+                right.insert_left_at_value(target_value, new_value);
+            }
+        }
+    }
+
+    fn insert_right_at_value(&mut self, target_value: &str, new_value: &str) {
+        if self.value == target_value {
+            // Insert right child at the current node
+            self.insert_right(new_value);
+        } else {
+            // Search for the target_value in left and right subtrees
+            if let Some(left) = &mut self.left {
+                left.insert_right_at_value(target_value, new_value);
+            }
+            if let Some(right) = &mut self.right {
+                right.insert_right_at_value(target_value, new_value);
+            }
+        }
+    }
+
+
     fn print_in_order(&self) {
         if let Some(left) = &self.left {
             left.print_in_order();
@@ -66,20 +97,16 @@ fn build_tree_from_lines(iter: &mut std::slice::Iter<String>) -> Option<Box<Tree
                 .map(|s| s.trim())
                 .collect();
 
-        let mut root = TreeNode::new(root_value);
+        let mut root: TreeNode = TreeNode::new(root_value);
 
         if let Some(left_child) = root_childs.get(0) {
-            root.insert_left(left_child);
+            root.insert_left_at_value(&root.value.clone(), left_child);
         }
 
         if let Some(right_child) = root_childs.get(1) {
-            root.insert_right(right_child);
+            root.insert_right_at_value(&root.value.clone(), right_child);
         }
         println!("{:?}", root);
-
-        root.left = build_tree_from_lines(iter);
-        root.right = build_tree_from_lines(iter);
-
         Some(Box::new(root))
     } else {
         None
