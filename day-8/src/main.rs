@@ -80,7 +80,14 @@ impl TreeNode {
         }
     }
 
-    fn search_steps(&self, target_value: &str, steps: usize, instructions: Vec<&str>, ind: &mut usize, visited: &mut HashMap<String, TreeNode>) -> Option<usize> {
+    fn search_steps(
+        &self,
+        target_value: &str,
+        steps: usize,
+        instructions: Vec<&str>,
+        ind: &mut usize,
+        visited: &mut HashMap<String, TreeNode>,
+    ) -> Option<usize> {
         if *ind == instructions.len() {
             *ind = 0;
         }
@@ -94,17 +101,41 @@ impl TreeNode {
             if *instructions.get(*ind).unwrap() == "L" {
                 if let Some(left) = &self.left {
                     if visited.contains_key(&left.value) {
-                        left_steps = visited.get(&left.value).unwrap().search_steps(target_value, steps + 1, instructions, &mut (*ind + 1), &mut visited.clone().to_owned());
+                        left_steps = visited.get(&left.value).unwrap().search_steps(
+                            target_value,
+                            steps + 1,
+                            instructions,
+                            &mut (*ind + 1),
+                            &mut visited.clone().to_owned(),
+                        );
                     } else {
-                        left_steps = left.search_steps(target_value, steps + 1, instructions, &mut (*ind + 1), &mut visited.clone().to_owned());
+                        left_steps = left.search_steps(
+                            target_value,
+                            steps + 1,
+                            instructions,
+                            &mut (*ind + 1),
+                            &mut visited.clone().to_owned(),
+                        );
                     }
                 }
             } else {
                 if let Some(right) = &self.right {
                     if visited.contains_key(&right.value) {
-                        right_steps = visited.get(&right.value).unwrap().search_steps(target_value, steps + 1, instructions, &mut (*ind + 1), &mut visited.clone().to_owned());
+                        right_steps = visited.get(&right.value).unwrap().search_steps(
+                            target_value,
+                            steps + 1,
+                            instructions,
+                            &mut (*ind + 1),
+                            &mut visited.clone().to_owned(),
+                        );
                     } else {
-                        right_steps = right.search_steps(target_value, steps + 1, instructions, &mut (*ind + 1), &mut visited.clone().to_owned());
+                        right_steps = right.search_steps(
+                            target_value,
+                            steps + 1,
+                            instructions,
+                            &mut (*ind + 1),
+                            &mut visited.clone().to_owned(),
+                        );
                     }
                 }
             }
@@ -166,7 +197,13 @@ fn part_one() -> io::Result<()> {
     if let Some(root_node) = root {
         root_node.print_in_order(0);
         // println!("{:?}", root_node);
-        if let Some(steps) = root_node.search_steps("ZZZ", 0, left_right_instructions.split("").collect(), &mut 0, &mut visited) {
+        if let Some(steps) = root_node.search_steps(
+            "ZZZ",
+            0,
+            left_right_instructions.split("").collect(),
+            &mut 0,
+            &mut visited,
+        ) {
             println!("Steps to find 'ZZZ': {}", steps);
         } else {
             println!("Value 'ZZZ' not found in the tree");
