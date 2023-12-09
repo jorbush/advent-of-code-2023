@@ -36,10 +36,9 @@ impl TreeNode {
 
     fn insert_left_at_value(&mut self, target_value: &str, new_value: &str) {
         if self.value == target_value {
-            // Insert left child at the current node
             self.insert_left(new_value);
+            println!("insert left {:?}", new_value.to_string());
         } else {
-            // Search for the target_value in left and right subtrees
             if let Some(left) = &mut self.left {
                 left.insert_left_at_value(target_value, new_value);
             }
@@ -51,10 +50,9 @@ impl TreeNode {
 
     fn insert_right_at_value(&mut self, target_value: &str, new_value: &str) {
         if self.value == target_value {
-            // Insert right child at the current node
             self.insert_right(new_value);
+            println!("insert right {:?}", new_value.to_string());
         } else {
-            // Search for the target_value in left and right subtrees
             if let Some(left) = &mut self.left {
                 left.insert_right_at_value(target_value, new_value);
             }
@@ -155,6 +153,7 @@ fn build_tree_from_lines(iter: &mut std::slice::Iter<String>, root: &mut Option<
             .replace("(", "")
             .replace(")", "");
         let root_childs: Vec<&str> = childs.split(',').map(|s| s.trim()).collect();
+        println!("{:?}", root_values);
 
         if root.is_none() {
             *root = Some(Box::new(TreeNode::new(root_value)));
