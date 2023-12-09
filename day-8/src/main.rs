@@ -1,7 +1,8 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, BufRead};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct TreeNode {
     value: String,
     left: Option<Box<TreeNode>>,
@@ -79,7 +80,7 @@ impl TreeNode {
         }
     }
 
-    fn search_steps(&self, target_value: &str, steps: usize, instructions: Vec<&str>, ind: &mut usize) -> Option<usize> {
+    fn search_steps(&self, target_value: &str, steps: usize, instructions: Vec<&str>, ind: &mut usize, visited: &mut HashMap<String, TreeNode>) -> Option<usize> {
         if *ind == instructions.len() {
             *ind = 0;
         }
@@ -89,13 +90,22 @@ impl TreeNode {
             let mut left_steps = None;
             let mut right_steps = None;
             println!("{} {}", self.value, *instructions.get(*ind).unwrap());
+            visited.insert(self.value.clone(), self.clone());
             if *instructions.get(*ind).unwrap() == "L" {
                 if let Some(left) = &self.left {
-                    left_steps = left.search_steps(target_value, steps + 1, instructions, &mut (*ind + 1));
+                    if visited.contains_key(&left.value) {
+                        left_steps = visited.get(&left.value).unwrap().search_steps(target_value, steps + 1, instructions, &mut (*ind + 1), &mut visited.clone().to_owned());
+                    } else {
+                        left_steps = left.search_steps(target_value, steps + 1, instructions, &mut (*ind + 1), &mut visited.clone().to_owned());
+                    }
                 }
             } else {
                 if let Some(right) = &self.right {
-                    right_steps = right.search_steps(target_value, steps + 1, instructions, &mut (*ind + 1));
+                    if visited.contains_key(&right.value) {
+                        right_steps = visited.get(&right.value).unwrap().search_steps(target_value, steps + 1, instructions, &mut (*ind + 1), &mut visited.clone().to_owned());
+                    } else {
+                        right_steps = right.search_steps(target_value, steps + 1, instructions, &mut (*ind + 1), &mut visited.clone().to_owned());
+                    }
                 }
             }
 
@@ -152,10 +162,11 @@ fn part_one() -> io::Result<()> {
     let mut iter = nodes.iter();
     let mut root: Option<Box<TreeNode>> = None;
     build_tree_from_lines(&mut iter, &mut root);
+    let mut visited: HashMap<String, TreeNode> = HashMap::new();
     if let Some(root_node) = root {
         root_node.print_in_order(0);
         // println!("{:?}", root_node);
-        if let Some(steps) = root_node.search_steps("ZZZ", 0, left_right_instructions.split("").collect(), &mut 0) {
+        if let Some(steps) = root_node.search_steps("ZZZ", 0, left_right_instructions.split("").collect(), &mut 0, &mut visited) {
             println!("Steps to find 'ZZZ': {}", steps);
         } else {
             println!("Value 'ZZZ' not found in the tree");
