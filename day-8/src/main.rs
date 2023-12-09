@@ -88,8 +88,8 @@ impl TreeNode {
         ind: &mut usize,
         visited: &mut HashMap<String, TreeNode>,
     ) -> Option<usize> {
-        if *ind == instructions.len() {
-            *ind = 0;
+        if *ind == instructions.len() - 1  {
+            *ind = 1;
         }
         if self.value == target_value {
             Some(steps)
@@ -201,7 +201,7 @@ fn part_one() -> io::Result<()> {
             "ZZZ",
             0,
             left_right_instructions.split("").collect(),
-            &mut 0,
+            &mut 1,
             &mut visited,
         ) {
             println!("Steps to find 'ZZZ': {}", steps);
