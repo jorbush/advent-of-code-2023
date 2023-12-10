@@ -141,8 +141,8 @@ fn part_one() -> io::Result<()> {
         let mut visited: HashSet<Point> = HashSet::new();
         let matrix_distances = convert_matrix(&mut matrix, start_point, &mut visited);
         // println!("{:?}", matrix_distances);
-        //let farthest_point = find_farthest_point(&matrix, start_point);
-        // println!("{:?}", farthest_point);
+        let farthest_point = find_farthest_point(&matrix_distances, start_point);
+        println!("{:?} Result => {:?}", farthest_point, matrix_distances[farthest_point.x][farthest_point.y]);
     }
 
     Ok(())
