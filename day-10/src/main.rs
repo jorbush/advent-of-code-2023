@@ -9,15 +9,39 @@ struct Point {
     y: usize,
 }
 
-fn find_start_point(matrix: &[Vec<u32>]) -> Option<Point> {
+fn find_start_point(matrix: &Vec<Vec<char>>) -> Option<Point> {
     for (i, row) in matrix.iter().enumerate() {
         for (j, &cell) in row.iter().enumerate() {
-            if cell == 'S' as u32 {
+            if cell == 'S' {
                 return Some(Point { x: i, y: j });
             }
         }
     }
     None
+}
+
+fn char_to_distance(ch: char, start_point: Point, matrix: &[Vec<char>]) -> u32 {
+    match ch {
+        '.' => 0,
+        'S' => 0,
+        _ => {
+            let target_point = find_target_point(ch, matrix);
+            manhattan_distance(start_point, target_point.unwrap())
+        }
+    }
+}
+
+fn find_target_point(ch: char, matrix: &[Vec<char>]) -> Result<Point, &'static str> {
+    for (i, row) in matrix.iter().enumerate() {
+        if let Some(j) = row.iter().position(|&c| c == ch) {
+            return Ok(Point { x: i, y: j });
+        }
+    }
+    Err("Objetivo no encontrado en la matriz")
+}
+
+fn manhattan_distance(p1: Point, p2: Point) -> u32 {
+    ((p1.x as isize - p2.x as isize).abs() + (p1.y as isize - p2.y as isize).abs()) as u32
 }
 
 fn find_farthest_point(matrix: &[Vec<u32>], start: Point) -> Point {
@@ -65,9 +89,24 @@ fn find_farthest_point(matrix: &[Vec<u32>], start: Point) -> Point {
 fn build_matrix_from_lines(iter: &mut std::slice::Iter<String>, matrix: &mut Vec<Vec<char>>) {
     if let Some(line) = iter.next() {
         let line_values: Vec<char> = line.chars().collect();
+        println!("{:?}", line_values);
         matrix.push(line_values);
         build_matrix_from_lines(iter, matrix);
     }
+}
+
+fn convert_matrix(matrix: &mut Vec<Vec<char>>, start_point: Point) -> Vec<Vec<u32>> {
+    let mut matrix_distances = Vec::new();
+    for row in &matrix.clone() {
+        let mut distance_row = Vec::new();
+        for cell in row {
+            let distance = char_to_distance(*cell, start_point, matrix);
+            distance_row.push(distance);
+        }
+        println!("{:?}", distance_row);
+        matrix_distances.push(distance_row);
+    }
+    matrix_distances
 }
 
 fn part_one() -> io::Result<()> {
@@ -79,7 +118,14 @@ fn part_one() -> io::Result<()> {
     let mut iter = lines.iter();
     let mut matrix: Vec<Vec<char>> = vec![];
     build_matrix_from_lines(&mut iter, &mut matrix);
-    println!("{:?}", matrix);
+    if let Some(start_point) = find_start_point(&matrix) {
+        println!("{:?}", start_point);
+        let matrix_distances = convert_matrix(&mut matrix, start_point);
+        // println!("{:?}", matrix_distances);
+        //let farthest_point = find_farthest_point(&matrix, start_point);
+        // println!("{:?}", farthest_point);
+    }
+
     Ok(())
 }
 
