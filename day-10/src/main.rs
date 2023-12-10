@@ -137,7 +137,7 @@ fn part_one() -> io::Result<()> {
     let mut matrix: Vec<Vec<char>> = vec![];
     build_matrix_from_lines(&mut iter, &mut matrix);
     if let Some(start_point) = find_start_point(&matrix) {
-        println!("{:?}", start_point);
+        println!("Start {:?}", start_point);
         let mut visited: HashSet<Point> = HashSet::new();
         let matrix_distances = convert_matrix(&mut matrix, start_point, &mut visited);
         // println!("{:?}", matrix_distances);
