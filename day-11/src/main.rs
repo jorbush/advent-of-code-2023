@@ -5,17 +5,24 @@ use std::io::BufRead;
 
 fn convert_matrix_ids(
     matrix: &mut Vec<Vec<char>>,
-) {
+) -> Vec<Vec<String>> {
     let mut count = 1;
-    for (i, row) in matrix.iter_mut().enumerate() {
-        for (j, cell) in row.iter_mut().enumerate() {
+    let mut matrix_ids = Vec::new();
+    for row in &matrix.clone() {
+        let mut ids_row: Vec<String> = Vec::new();
+        for cell in row {
             if *cell == '#' {
-                *cell= count.to_string().chars().next().unwrap();
+                let id = count.to_string();
+                ids_row.push(id);
                 count += 1;
+            } else {
+                ids_row.push(".".to_string());
             }
         }
-        println!("{:?}", row);
+        println!("{:?}", ids_row);
+        matrix_ids.push(ids_row);
     }
+    matrix_ids
 }
 
 
@@ -72,7 +79,7 @@ fn part_one() -> io::Result<()> {
         println!("{:?}", row);
     }
     println!("{}", "With ids: ");
-    convert_matrix_ids(&mut matrix);
+    let mut matrix_ids = convert_matrix_ids(&mut matrix);
     Ok(())
 }
 
