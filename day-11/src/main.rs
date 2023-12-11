@@ -3,6 +3,22 @@ use std::fs::File;
 use std::io;
 use std::io::BufRead;
 
+fn convert_matrix_ids(
+    matrix: &mut Vec<Vec<char>>,
+) {
+    let mut count = 1;
+    for (i, row) in matrix.iter_mut().enumerate() {
+        for (j, cell) in row.iter_mut().enumerate() {
+            if *cell == '#' {
+                *cell= count.to_string().chars().next().unwrap();
+                count += 1;
+            }
+        }
+        println!("{:?}", row);
+    }
+}
+
+
 fn build_matrix_from_lines(iter: &mut std::slice::Iter<String>, matrix: &mut Vec<Vec<char>>) {
     if let Some(line) = iter.next() {
         let line_values: Vec<char> = line.chars().collect();
@@ -55,6 +71,8 @@ fn part_one() -> io::Result<()> {
     for row in matrix.iter() {
         println!("{:?}", row);
     }
+    println!("{}", "With ids: ");
+    convert_matrix_ids(&mut matrix);
     Ok(())
 }
 
