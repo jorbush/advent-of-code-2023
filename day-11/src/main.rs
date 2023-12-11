@@ -3,6 +3,42 @@ use std::fs::File;
 use std::io;
 use std::io::BufRead;
 
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+struct Point {
+    x: usize,
+    y: usize,
+}
+
+fn manhattan_distance(start: Point, end: Point) -> usize {
+    ((start.x as isize - end.x as isize).abs() + (start.y as isize - end.y as isize).abs()) as usize
+}
+
+fn calculate_total_distance(matrix_ids: &Vec<Vec<String>>) -> usize {
+    let rows = matrix_ids.len();
+    let cols = matrix_ids[0].len();
+
+    let mut total_distance: usize = 0;
+
+    for i in 1..=rows {
+        for j in 1..=cols {
+            if matrix_ids[i - 1][j - 1] != "." {
+                let start = Point { x: i - 1, y: j - 1 };
+                for x in 1..=rows {
+                    for y in 1..=cols {
+                        if matrix_ids[x - 1][y - 1] != "." && (i != x || j != y) {
+                            let end = Point { x: x - 1, y: y - 1 };
+                            let distance = manhattan_distance(start, end);
+                            total_distance += distance;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    total_distance
+}
+
 fn convert_matrix_ids(
     matrix: &mut Vec<Vec<char>>,
 ) -> Vec<Vec<String>> {
@@ -80,6 +116,9 @@ fn part_one() -> io::Result<()> {
     }
     println!("{}", "With ids: ");
     let mut matrix_ids = convert_matrix_ids(&mut matrix);
+
+    let total_distance = calculate_total_distance(&matrix_ids);
+    println!("Total distance between all pairs: {}", total_distance);
     Ok(())
 }
 
